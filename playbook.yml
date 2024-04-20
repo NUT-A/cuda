@@ -133,6 +133,7 @@
 - name: Install Tensorflow
   hosts: cuda-servers
   gather_facts: true
+  become: true
   roles:
     - andrewrothstein.anaconda
     - role: andrewrothstein.conda-env
