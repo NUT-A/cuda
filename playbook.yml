@@ -16,85 +16,85 @@
           - "export CUDA_HOME={{ cuda_home }}"
     cudnn_url: "https://www.dropbox.com/scl/fi/mqzo9ipitcfxqnj4n301o/cudnn-linux-x86_64-8.9.7.29_cuda12-archive-2zPLtehSbSB3v7lMdEx0TNwJUMvqlOqZ4kboJjfpXhKr2Sfg82N8TzCf4Lqs9eqCjZFkXcM3lhMiQ2blnpMVIicvte7sNGWqDqjK.tar.xz?rlkey=y9usro52gbppr7m0vaf0l9k0p&raw=1"
   tasks:
-    # - name: Disable ubuntu updates
-    #   ansible.builtin.systemd:
-    #     name: "{{ item.name }}"
-    #     enabled: "{{ item.enabled }}"
-    #     state: "{{ item.state }}"
-    #   loop:
-    #     - { name: "apt-daily-upgrade.timer", enabled: no, state: stopped }
-    #     - { name: "apt-daily.timer", enabled: no, state: stopped }
+    - name: Disable ubuntu updates
+      ansible.builtin.systemd:
+        name: "{{ item.name }}"
+        enabled: "{{ item.enabled }}"
+        state: "{{ item.state }}"
+      loop:
+        - { name: "apt-daily-upgrade.timer", enabled: no, state: stopped }
+        - { name: "apt-daily.timer", enabled: no, state: stopped }
       
-    # - name: Unhold NVIDIA drivers
-    #   shell: apt-mark unhold nvidia-driver-*
-    #   ignore_errors: true
+    - name: Unhold NVIDIA drivers
+      shell: apt-mark unhold nvidia-driver-*
+      ignore_errors: true
 
-    # - name: Delete all NVIDIA packages
-    #   shell: apt-get purge -y nvidia-*
-    #   ignore_errors: true
+    - name: Delete all NVIDIA packages
+      shell: apt-get purge -y nvidia-*
+      ignore_errors: true
 
-    # - name: Delete all CUDA packages
-    #   shell: apt-get purge -y cuda-*
-    #   ignore_errors: true
+    - name: Delete all CUDA packages
+      shell: apt-get purge -y cuda-*
+      ignore_errors: true
 
-    # - name: Add NVIDIA package repositories
-    #   ansible.builtin.apt_repository:
-    #     repo: ppa:graphics-drivers/ppa
-    #     state: present
+    - name: Add NVIDIA package repositories
+      ansible.builtin.apt_repository:
+        repo: ppa:graphics-drivers/ppa
+        state: present
 
-    # - name: Install NVIDIA drivers
-    #   ansible.builtin.apt:
-    #     update_cache: yes
-    #     name: "nvidia-driver-{{ nvidia_driver_version }}"
-    #     state: latest
+    - name: Install NVIDIA drivers
+      ansible.builtin.apt:
+        update_cache: yes
+        name: "nvidia-driver-{{ nvidia_driver_version }}"
+        state: latest
     
-    # - name: Hold NVIDIA drivers
-    #   shell: "apt-mark hold nvidia-driver-{{ nvidia_driver_version }}"
+    - name: Hold NVIDIA drivers
+      shell: "apt-mark hold nvidia-driver-{{ nvidia_driver_version }}"
 
-    # - name: Download CUDA pin file
-    #   get_url:
-    #     url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
-    #     dest: /tmp/cuda-ubuntu2204.pin
+    - name: Download CUDA pin file
+      get_url:
+        url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
+        dest: /tmp/cuda-ubuntu2204.pin
 
-    # - name: Move CUDA pin file to apt preferences
-    #   ansible.builtin.copy:
-    #     src: /tmp/cuda-ubuntu2204.pin
-    #     dest: /etc/apt/preferences.d/cuda-repository-pin-600
-    #     remote_src: yes
+    - name: Move CUDA pin file to apt preferences
+      ansible.builtin.copy:
+        src: /tmp/cuda-ubuntu2204.pin
+        dest: /etc/apt/preferences.d/cuda-repository-pin-600
+        remote_src: yes
 
-    # - name: Download CUDA repo package
-    #   get_url:
-    #     url: "https://developer.download.nvidia.com/compute/cuda/{{ cuda_semantic_version }}/local_installers/{{ cuda_version }}.deb"
-    #     dest: "/tmp/{{ cuda_version }}.deb"
+    - name: Download CUDA repo package
+      get_url:
+        url: "https://developer.download.nvidia.com/compute/cuda/{{ cuda_semantic_version }}/local_installers/{{ cuda_version }}.deb"
+        dest: "/tmp/{{ cuda_version }}.deb"
 
-    # - name: Install CUDA repo package
-    #   ansible.builtin.apt:
-    #     deb: "/tmp/{{ cuda_version }}.deb"
+    - name: Install CUDA repo package
+      ansible.builtin.apt:
+        deb: "/tmp/{{ cuda_version }}.deb"
 
-    # - name: Copy CUDA keyring to the proper directory
-    #   ansible.builtin.shell:
-    #     cmd: "cp /var/cuda-repo-ubuntu2204-{{ cuda_minor_version }}-local/cuda-*-keyring.gpg /usr/share/keyrings/"
+    - name: Copy CUDA keyring to the proper directory
+      ansible.builtin.shell:
+        cmd: "cp /var/cuda-repo-ubuntu2204-{{ cuda_minor_version }}-local/cuda-*-keyring.gpg /usr/share/keyrings/"
 
-    # - name: Update apt cache
-    #   ansible.builtin.apt:
-    #     update_cache: yes
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
 
-    # - name: Install CUDA
-    #   ansible.builtin.apt:
-    #     name: "cuda-toolkit-{{ cuda_minor_version }}"
-    #     state: present
-    #     update_cache: yes
+    - name: Install CUDA
+      ansible.builtin.apt:
+        name: "cuda-toolkit-{{ cuda_minor_version }}"
+        state: present
+        update_cache: yes
 
-    # - name: Define users with home directories
-    #   set_fact:
-    #     users_with_home: 
-    #       - "{{ ansible_facts.env.PWD }}"
+    - name: Define users with home directories
+      set_fact:
+        users_with_home: 
+          - "{{ ansible_facts.env.PWD }}"
 
-    # - name: "Update .bashrc for each user"
-    #   include_tasks: update_bashrc.yml
-    #   loop: "{{ users_with_home }}"
-    #   loop_control:
-    #     loop_var: user_home
+    - name: "Update .bashrc for each user"
+      include_tasks: update_bashrc.yml
+      loop: "{{ users_with_home }}"
+      loop_control:
+        loop_var: user_home
 
     - name: Download cuDNN tar file
       get_url:
@@ -129,3 +129,15 @@
     - name: Display cuDNN version installed
       debug:
         msg: "cuDNN version installed: {{ cudnn_version_check.stdout_lines }}"
+
+- name: Install Tensorflow
+  hosts: cuda-servers
+  gather_facts: true
+  roles:
+    - andrewrothstein.anaconda
+    - role: andrewrothstein.conda-env
+      conda_env_name: tensorflow
+      conda_env_environment: tensorflow.yml
+  tasks:
+    - name: Initi conda
+      ansible.builtin.shell: /usr/local/anaconda/bin/conda init

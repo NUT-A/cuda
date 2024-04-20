@@ -1,0 +1,5 @@
+# requirements.yml
+- src: andrewrothstein.anaconda
+  version: 4.2.0
+- src: andrewrothstein.conda-env
+  
