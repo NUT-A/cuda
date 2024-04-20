@@ -1,0 +1,8 @@
+- name: "Add environment variable to user's .bashrc"
+  ansible.builtin.lineinfile:
+    path: "{{ user_home }}/.bashrc"
+    line: "{{ env_line }}"
+    create: no
+  loop: "{{ env_lines }}"
+  loop_control:
+    loop_var: env_line
